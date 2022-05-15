@@ -5,6 +5,7 @@ import com.ceratipa.vertexregistry.core.domain.command.edge.RemoveEdge;
 import com.ceratipa.vertexregistry.core.domain.handler.GraphCommandHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -16,12 +17,12 @@ public class EdgeController {
     private final GraphCommandHandler graphCommandHandler;
 
     @PostMapping("add-edge")
-    public UUID addEdge(@Valid AddEdge command) {
+    public UUID addEdge(@RequestBody @Valid AddEdge command) {
         return graphCommandHandler.on(command);
     }
 
     @PostMapping("remove-edge")
-    public void removeEdge(@Valid RemoveEdge command) {
+    public void removeEdge(@RequestBody @Valid RemoveEdge command) {
         graphCommandHandler.on(command);
     }
 }

@@ -5,6 +5,7 @@ import com.ceratipa.vertexregistry.core.domain.command.vertex.RemoveVertex;
 import com.ceratipa.vertexregistry.core.domain.handler.GraphCommandHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -16,12 +17,12 @@ public class VertexController {
     private final GraphCommandHandler graphCommandHandler;
 
     @PostMapping("/add-vertex")
-    public UUID addVertex(@Valid AddVertex command) {
+    public UUID addVertex(@RequestBody @Valid AddVertex command) {
         return graphCommandHandler.on(command);
     }
 
     @PostMapping("remove-vertex")
-    public void removeVertex(@Valid RemoveVertex command) {
+    public void removeVertex(@RequestBody @Valid RemoveVertex command) {
         graphCommandHandler.on(command);
     }
 }
