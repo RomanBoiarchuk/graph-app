@@ -1,3 +1,7 @@
+type Query {
+    graph: Graph!
+}
+
 type Subscription {
     graph : Graph!
 }
