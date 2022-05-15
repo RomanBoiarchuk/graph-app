@@ -8,4 +8,4 @@
 - kubectl run postgres-postgresql-client --rm --tty -i --restart='Never' --namespace graph-app  
   --image docker.io/bitnami/postgresql:14.1.0-debian-10-r80 --env="PGPASSWORD=$POSTGRES_PASSWORD"  
   --command -- psql -h postgres-postgresql -U postgres -c "CREATE DATABASE \"vertex_registry\";"
-- 
+- helm install redis bitnami/redis --namespace graph-app
