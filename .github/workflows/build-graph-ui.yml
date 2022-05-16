@@ -1,4 +1,4 @@
-name: Test & Build [graph-ui]
+name: Build [graph-ui]
 
 on:
   push:
@@ -11,24 +11,8 @@ on:
       - 'graph-ui/**'
 
 jobs:
-  lint-test:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up NodeJS 14
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - working-directory: ./graph-ui
-        run: npm install
-      - name: Test
-        working-directory: ./graph-ui
-        run: npm run test
   publish-docker-image:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-    needs: [ lint-test ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
