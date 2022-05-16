@@ -7,14 +7,15 @@ import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
 public class VertexRegistryChannelListener implements MessageListener {
     private final ObjectMapper objectMapper;
-    private Set<VertexRegistryEventsObserver> observers = new HashSet<>();
+    private Set<VertexRegistryEventsObserver> observers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     @Override
     @SneakyThrows

@@ -13,9 +13,9 @@ import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,12 +28,12 @@ public class GraphSubscriptionController {
     @SubscriptionMapping
     public Publisher<Map<String, Object>> graph() {
         return Flux.create(sink -> {
-            var vertexes = new ArrayList<>(
+            var vertexes = new CopyOnWriteArrayList<>(
                     vertexService.findAll().stream()
                             .map(v -> new VertexDto(v.getId(), v.getName()))
                             .toList()
             );
-            var edges = new ArrayList<>(
+            var edges = new CopyOnWriteArrayList<>(
                     edgeService.findAll().stream()
                             .map(e -> new EdgeDto(e.getId(), e.getWeight().doubleValue(), e.getFrom().getId(), e.getTo().getId()))
                             .toList()
