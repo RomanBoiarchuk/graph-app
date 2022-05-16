@@ -1,0 +1,51 @@
+name: Test & Build [graph-path-finding-service]
+
+on:
+  push:
+    branches: [master]
+    paths:
+    - 'graph-path-finding-service/**'
+  pull_request:
+    branches: [master]
+    paths:
+    - 'graph-path-finding-service/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 17
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+    - name: Test with Gradle
+      run: | 
+        cd graph-path-finding-service
+        gradle test
+  publish-docker-image:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: graph-path-finding-service/
+          file: graph-path-finding-service/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/graph-path-finding-service:${{ github.run_number }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/graph-path-finding-service:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/graph-path-finding-service:buildcache,mode=max
