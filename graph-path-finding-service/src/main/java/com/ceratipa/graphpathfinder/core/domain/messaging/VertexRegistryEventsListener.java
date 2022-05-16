@@ -3,6 +3,7 @@ package com.ceratipa.graphpathfinder.core.domain.messaging;
 import com.ceratipa.graphpathfinder.core.domain.entity.Edge;
 import com.ceratipa.graphpathfinder.core.domain.service.EdgeService;
 import com.ceratipa.graphpathfinder.core.domain.service.VertexService;
+import com.ceratipa.vertexregistry.core.domain.messaging.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
