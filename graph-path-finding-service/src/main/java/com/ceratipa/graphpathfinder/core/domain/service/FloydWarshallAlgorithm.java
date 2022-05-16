@@ -36,8 +36,12 @@ public class FloydWarshallAlgorithm {
         edges.forEach(edge -> {
             int fromIndex = vertexIndexById.get(edge.getFromVertexId());
             int toIndex = vertexIndexById.get(edge.getToVertexId());
+
             dist.get(fromIndex).set(toIndex, edge.getWeight().doubleValue());
             dist.get(toIndex).set(fromIndex, edge.getWeight().doubleValue());
+
+            next.get(fromIndex).set(toIndex, edge.getFromVertexId());
+            next.get(toIndex).set(fromIndex, edge.getToVertexId());
         });
 
         for (int i = 0; i < size; i++) {
