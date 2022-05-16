@@ -1,6 +1,8 @@
-import {Canvas, Edge, Node, useUndo} from "reaflow";
+import {Canvas, Edge, Node} from "reaflow";
 import {useState} from "react";
 import {Box, Button, Modal, TextField, Typography} from "@mui/material";
+import {createVertex, removeVertex} from "../service/vertex.service";
+import {createEdge, removeEdge} from "../service/edge.service";
 
 const modalStyle = {
     position: 'absolute',
@@ -14,72 +16,11 @@ const modalStyle = {
     p: 4,
 };
 
-const Graph = ({height, width}) => {
+const Graph = ({height, width, nodes, edges}) => {
     const [nodeSelections, setNodeSelections] = useState([]);
     const [edgeSelections, setEdgeSelections] = useState([]);
     const [addVertexState, setAddVertexState] = useState(null);
     const [addEdgeState, setAddEdgeState] = useState(null);
-    const nodesHardCode = [
-        {
-            id: '1',
-            text: 'Node 1'
-        },
-        {
-            id: '2',
-            text: 'Node 2'
-        },
-        {
-            id: '3',
-            text: 'Node 3'
-        },
-        {
-            id: '4',
-            text: 'Node 4'
-        },
-        {
-            id: '5',
-            text: 'Node 5'
-        }
-    ];
-    const edgesHardcode = [
-        {
-            id: '1-2',
-            from: '1',
-            to: '2',
-            text: '1'
-        },
-        {
-            id: '1-3',
-            from: '1',
-            to: '3',
-            text: '1'
-        },
-        {
-            id: '1-4',
-            from: '1',
-            to: '4',
-            text: '1'
-        },
-        {
-            id: '2-4',
-            from: '2',
-            to: '4',
-            text: '2'
-        }
-    ]
-    const [nodes, setNodes] = useState(nodesHardCode);
-    const [edges, setEdges] = useState(edgesHardcode);
-
-    const {undo, redo, canUndo, canRedo, history, clear, count} = useUndo({
-        nodes,
-        edges,
-        onUndoRedo: (state) => {
-            console.log('Undo / Redo', state);
-            console.log('history', history());
-            setEdges(state.edges);
-            setNodes(state.nodes);
-        }
-    });
 
     const handleNodeClick = node => {
         if (nodeSelections.length < 2) {
@@ -99,40 +40,30 @@ const Graph = ({height, width}) => {
     };
 
     const handleNodeRemoval = node => {
-        // TODO call API
-        setEdges(edges.filter(e => e.from !== node.id && e.to !== node.id));
-        setNodes(nodes.filter(n => n.id !== node.id));
-        setNodeSelections([]);
-        setEdgeSelections([]);
+        removeVertex(node.id).then(() => {
+            setNodeSelections([]);
+            setEdgeSelections([]);
+        });
     };
 
     const handleEdgeRemoval = edge => {
-        // TODO call API
-        setEdges(edges.filter(e => e.id !== edge.id));
-        setNodeSelections([]);
-        setEdgeSelections([]);
+        removeEdge(edge.id).then(() => {
+            setNodeSelections([]);
+            setEdgeSelections([]);
+        })
     };
 
     const handleAddVertex = () => {
-        // TODO call API
-        const newNode = {
-            id: `${Math.random()}`,
-            text: addVertexState.name
-        }
-        setNodes([...nodes, newNode]);
-        setAddVertexState(null);
+        createVertex(addVertexState.name).then(() => {
+            setAddVertexState(null);
+        });
     };
 
     const handleAddEdge = () => {
-        // TODO call API
-        const newEdge = {
-            id: `${Math.random()}`,
-            text: addEdgeState.weight,
-            from: addEdgeState.fromNode.id,
-            to: addEdgeState.toNode.id
-        }
-        setEdges([...edges, newEdge]);
-        setAddEdgeState(null);
+        createEdge(addEdgeState.weight, addEdgeState.fromNode.id, addEdgeState.toNode.id)
+            .then(() => {
+                setAddEdgeState(null);
+            });
     };
 
     const handleModalClose = () => {
