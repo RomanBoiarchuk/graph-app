@@ -24,12 +24,12 @@ public class Edge {
     private BigDecimal weight;
 
     @ManyToOne
-    @JoinColumn(name = "from")
+    @JoinColumn(name = "from_vertex")
     @NotNull(message = "Vertex id can't be null.")
     private Vertex from;
 
     @ManyToOne
-    @JoinColumn(name = "to")
+    @JoinColumn(name = "to_vertex")
     @NotNull(message = "Vertex id can't be null.")
     private Vertex to;
 }

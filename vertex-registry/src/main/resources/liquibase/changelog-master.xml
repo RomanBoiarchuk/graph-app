@@ -41,5 +41,9 @@
         </createTable>
         <addUniqueConstraint tableName="edge" columnNames="from, to"/>
     </changeSet>
+    <changeSet id="002-rename-edge-column" author="rboiarchuk">
+        <renameColumn tableName="edge" oldColumnName="from" newColumnName="from_vertex"/>
+        <renameColumn tableName="edge" oldColumnName="to" newColumnName="to_vertex"/>
+    </changeSet>
 
 </databaseChangeLog>
