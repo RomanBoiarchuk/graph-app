@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -32,7 +33,8 @@ public class VertexRegistryEventsListener {
             }
     )
     @SneakyThrows
-    public void consume(Event event) {
+    public void consume(ConsumerRecord<String, Event> message) {
+        var event = message.value();
         LOG.info("Processing event {}", event);
         ObjectNode payload = objectMapper.readValue(event.payload(), ObjectNode.class);
         switch (event.eventType()) {
