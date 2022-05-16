@@ -5,12 +5,17 @@ import com.ceratipa.graphpathfinder.repository.jpa.VertexRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class VertexService {
     private final VertexRepository vertexRepository;
+
+    public List<Vertex> findAll() {
+        return vertexRepository.findAll();
+    }
 
     public void addVertex(UUID vertexId) {
         Vertex entity = new Vertex();

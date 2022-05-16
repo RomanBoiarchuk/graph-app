@@ -2,6 +2,7 @@ package com.ceratipa.graphpathfinder.core.domain.messaging;
 
 import com.ceratipa.graphpathfinder.core.domain.entity.Edge;
 import com.ceratipa.graphpathfinder.core.domain.service.EdgeService;
+import com.ceratipa.graphpathfinder.core.domain.service.ShortestPathCacheService;
 import com.ceratipa.graphpathfinder.core.domain.service.VertexService;
 import com.ceratipa.vertexregistry.core.domain.messaging.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +24,8 @@ public class VertexRegistryEventsListener {
     private static final Logger LOG = LoggerFactory.getLogger(VertexRegistryEventsListener.class);
     private final VertexService vertexService;
     private final EdgeService edgeService;
+
+    private final ShortestPathCacheService cacheService;
     private final ObjectMapper objectMapper;
 
     @KafkaListener(
@@ -45,6 +48,7 @@ public class VertexRegistryEventsListener {
             case "EdgeRemoved" -> removeEdge(payload);
             default -> LOG.info("Unknown type {}. Skipping event {}", event.eventType(), event);
         }
+        cacheService.updateGraphInteractionTimestamp();
     }
 
     private void createVertex(ObjectNode payload) {
