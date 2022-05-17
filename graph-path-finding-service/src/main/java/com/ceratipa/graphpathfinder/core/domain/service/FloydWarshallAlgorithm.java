@@ -40,8 +40,8 @@ public class FloydWarshallAlgorithm {
             dist.get(fromIndex).set(toIndex, edge.getWeight().doubleValue());
             dist.get(toIndex).set(fromIndex, edge.getWeight().doubleValue());
 
-            next.get(fromIndex).set(toIndex, edge.getFromVertexId());
-            next.get(toIndex).set(fromIndex, edge.getToVertexId());
+            next.get(fromIndex).set(toIndex, edge.getToVertexId());
+            next.get(toIndex).set(fromIndex, edge.getFromVertexId());
         });
 
         for (int i = 0; i < size; i++) {
