@@ -2,6 +2,14 @@
   text-align: center;
 }
 
+.Highlighted-node {
+  fill: darkred !important;
+}
+
+.Highlighted-edge {
+  stroke: darkred !important;
+}
+
 .Main {
   display: flex;
   flex-direction: row;

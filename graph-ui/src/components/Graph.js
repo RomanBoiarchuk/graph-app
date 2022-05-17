@@ -3,6 +3,7 @@ import {useState} from "react";
 import {Box, Button, Modal, TextField, Typography} from "@mui/material";
 import {createVertex, removeVertex} from "../service/vertex.service";
 import {createEdge, removeEdge} from "../service/edge.service";
+import {findShortestPath} from "../service/path.finding.service";
 
 const modalStyle = {
     position: 'absolute',
@@ -21,6 +22,9 @@ const Graph = ({height, width, nodes, edges}) => {
     const [edgeSelections, setEdgeSelections] = useState([]);
     const [addVertexState, setAddVertexState] = useState(null);
     const [addEdgeState, setAddEdgeState] = useState(null);
+    const [path, setPath] = useState([]);
+
+    console.log({path});
 
     const handleNodeClick = node => {
         if (nodeSelections.length < 2) {
@@ -37,20 +41,19 @@ const Graph = ({height, width, nodes, edges}) => {
     const handleCanvasClick = () => {
         setNodeSelections([]);
         setEdgeSelections([]);
+        setPath([]);
     };
 
     const handleNodeRemoval = node => {
         removeVertex(node.id).then(() => {
-            setNodeSelections([]);
-            setEdgeSelections([]);
+            setNodeSelections(nodeSelections.filter(selection => node.id !== selection));
         });
     };
 
     const handleEdgeRemoval = edge => {
         removeEdge(edge.id).then(() => {
-            setNodeSelections([]);
-            setEdgeSelections([]);
-        })
+            setEdgeSelections(edgeSelections.filter(selection => edge.id !== selection));
+        });
     };
 
     const handleAddVertex = () => {
@@ -86,6 +89,30 @@ const Graph = ({height, width, nodes, edges}) => {
         }
     };
 
+    const handleShortestPath = () => {
+        const [sourceId, destinationId] = nodeSelections;
+        findShortestPath(sourceId, destinationId)
+            .then(response => response.json())
+            .then(value => {
+                setPath(value);
+                setNodeSelections([]);
+                setEdgeSelections([]);
+            });
+    };
+
+    const isHighlighted = edge => {
+        const sourceIndex = path.findIndex(vertexId => edge.source === vertexId);
+        if (sourceIndex < 0) {
+            return false;
+        }
+        if (sourceIndex === 0) {
+            return path[sourceIndex + 1] === edge.target;
+        } else if (sourceIndex === path.length - 1) {
+            return path[sourceIndex - 1] === edge.target;
+        }
+        return path[sourceIndex + 1] === edge.target || path[sourceIndex - 1] === edge.target;
+    };
+
     return (
         <>
             <Canvas
@@ -95,21 +122,34 @@ const Graph = ({height, width, nodes, edges}) => {
                 nodes={nodes}
                 edges={edges}
                 selections={[...nodeSelections, ...edgeSelections]}
-                onLayoutChange={layout => console.log('Layout', layout)}
                 onNodeLink={handleNodeLink}
                 onCanvasClick={handleCanvasClick}
-                node={
-                    <Node
-                        onClick={(event, node) => handleNodeClick(node)}
-                        onRemove={(event, node) => handleNodeRemoval(node)}
-                    />
-                }
-                edge={
-                    <Edge
-                        onClick={(event, edge) => handleEdgeClick(edge)}
-                        onRemove={(event, edge) => handleEdgeRemoval(edge)}
-                    />
-                }
+                node={node => (
+                    path.includes(node.id) ?
+                        <Node
+                            onClick={(event, node) => handleNodeClick(node)}
+                            onRemove={(event, node) => handleNodeRemoval(node)}
+                            className="Highlighted-node"
+                        />
+                        :
+                        <Node
+                            onClick={(event, node) => handleNodeClick(node)}
+                            onRemove={(event, node) => handleNodeRemoval(node)}
+                        />
+                )}
+                edge={edge => (
+                    isHighlighted(edge) ?
+                        <Edge
+                            onClick={(event, edge) => handleEdgeClick(edge)}
+                            onRemove={(event, edge) => handleEdgeRemoval(edge)}
+                            className="Highlighted-edge"
+                        />
+                        :
+                        <Edge
+                            onClick={(event, edge) => handleEdgeClick(edge)}
+                            onRemove={(event, edge) => handleEdgeRemoval(edge)}
+                        />
+                )}
                 layoutOptions={{
                     'elk.nodeLabels.placement': 'INSIDE V_CENTER H_RIGHT',
                     'elk.algorithm': 'org.eclipse.elk.layered',
@@ -129,7 +169,8 @@ const Graph = ({height, width, nodes, edges}) => {
             />
             <div style={{width: 250, alignItems: "center", display: "flex"}}>
                 <div style={{display: "flex", flexDirection: "column", gap: 10}}>
-                    <Button variant="contained" disabled={nodeSelections.length !== 2}>Find Shortest Path</Button>
+                    <Button variant="contained" disabled={nodeSelections.length !== 2} onClick={handleShortestPath}>Find
+                        Shortest Path</Button>
                     <Button variant="contained" onClick={() => setAddVertexState({name: ''})}>Add Vertex</Button>
                 </div>
             </div>
