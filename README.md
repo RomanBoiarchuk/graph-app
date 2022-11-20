@@ -9,14 +9,14 @@
   --image docker.io/bitnami/postgresql:14.1.0-debian-10-r80 --env="PGPASSWORD=$POSTGRES_PASSWORD"  
   --command -- psql -h postgres-postgresql -U postgres -c "CREATE DATABASE \"vertex_registry\";"
 - kubectl run postgres-postgresql-client --rm --tty -i --restart='Never' --namespace graph-app \
-> --image docker.io/bitnami/postgresql:14.1.0-debian-10-r80 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
-> --command -- psql -h postgres-postgresql -U postgres -c "CREATE DATABASE path_finder;"
+  --image docker.io/bitnami/postgresql:14.1.0-debian-10-r80 --env="PGPASSWORD=$POSTGRES_PASSWORD" \
+  --command -- psql -h postgres-postgresql -U postgres -c "CREATE DATABASE path_finder;"
 - helm install redis bitnami/redis --namespace graph-app
 - cd graph-path-finding-service
 - helm upgrade --install graph-path-finding-service ./helm/graph-path-finding-service/ --set image.tag=${latest-tag}
 - cd ../vertex-registry
-- helm upgrade --install vertex-registry ./helm/vertex-registry/ --set image.tag=${latest-tag}
+- helm upgrade --install vertex-registry ./helm/vertex-registry/ --set image.tag=${latest-tag} -n graph-app
 - Look up external ip of both services: kubectl get svc -n graph-app
 - build graph-ui image with proper IPs set in .env file
 - cd ../graph-ui
-- helm upgrade --install graph-ui ./helm/graph-ui/ --set image.tag=${latest-tag}
+- helm upgrade --install graph-ui ./helm/graph-ui/ --set image.tag=${latest-tag} -n graph-app
