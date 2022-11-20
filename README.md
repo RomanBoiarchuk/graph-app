@@ -13,7 +13,7 @@
   --command -- psql -h postgres-postgresql -U postgres -c "CREATE DATABASE path_finder;"
 - helm install redis bitnami/redis --namespace graph-app
 - cd graph-path-finding-service
-- helm upgrade --install graph-path-finding-service ./helm/graph-path-finding-service/ --set image.tag=${latest-tag}
+- helm upgrade --install graph-path-finding-service ./helm/graph-path-finding-service/ --set image.tag=${latest-tag} -n graph-app
 - cd ../vertex-registry
 - helm upgrade --install vertex-registry ./helm/vertex-registry/ --set image.tag=${latest-tag} -n graph-app
 - Look up external ip of both services: kubectl get svc -n graph-app
